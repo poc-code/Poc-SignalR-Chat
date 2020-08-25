@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>server</name>
+    </assembly>
+    <members>
+        <member name="T:server.Controllers.WeatherForecastController">
+            <summary>
+            Previsão do tempo
+            </summary>
+        </member>
+        <member name="M:server.Controllers.WeatherForecastController.#ctor(Microsoft.Extensions.Logging.ILogger{server.Controllers.WeatherForecastController})">
+            <summary>
+            Previsão do tempo
+            </summary>
+            <param name="logger"></param>
+        </member>
+        <member name="M:server.Controllers.WeatherForecastController.Get">
+            <summary>
+            Busca os valores aleatórios
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
