@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -5,12 +6,16 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using server.Hubs;
+using server.Models;
+using server.Service.chat;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace server
 {
@@ -50,6 +55,24 @@ namespace server
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
+            });
+            var key = Encoding.ASCII.GetBytes(Settings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+
+                };
             });
 
             if (!WebHostEnvironment.IsProduction())
@@ -108,13 +131,16 @@ namespace server
 
             app.UseRouting();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseAuthorization();
+
             
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapHub<StreamingHub>("/streaminghub");
+                endpoints.MapHub<ChatServiceHub>("/chatservicehub");
             });
 
             #region Configuração Swagger
