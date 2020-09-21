@@ -84,7 +84,7 @@ class MessageBlock {
 }
 function parseJwt(token) {
     if (token === null) {
-        myLoginFunction();
+        return false;
     } else {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -93,21 +93,22 @@ function parseJwt(token) {
         }).join(''));
         return JSON.parse(jsonPayload);
     }
-    return false;
 };
 
 
 function myLoginFunction() {
     var person;
     var group;
+    debugger;
     if (sessionStorage.getItem('credentials') === null) {
         person = prompt("Please enter your name:", "Your Name");
         var password = prompt("Please enter your password:", "Passaword")
         if (person === null || person === "" || password === "" || password === null) {
             alert("login inválido");
             setTimeout(3000);
-            location.reload();
+            debugger;
         } else {
+            debugger;
             var settings = {
                 "url": "api/v1/auth",
                 "method": "POST",
@@ -121,7 +122,9 @@ function myLoginFunction() {
             $.ajax(settings).done(function (response) {
                 sessionStorage.setItem("credentials", response['token']);
             });
+            debugger;
         }
+        debugger;
     }
 
     var payload = parseJwt(sessionStorage.getItem('credentials'));
@@ -135,7 +138,6 @@ function myLoginFunction() {
 
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("http://localhost:3420/chatservicehub")
-    .configureLogging(signalR.LogLevel.Information)
     .build();
 $("#send").disabled = true;
 
@@ -150,21 +152,11 @@ connection.on("ReceiveMessage", function (user, message) {
     $(".panel-body").scrollTop(window.innerHeight);
 });
 
-async function start() {
-    connection.start().then(function () {
-        $("#send").disabled = false;
-    }).catch(function (err) {
-        connection.reload();
-        return console.error(err.toString());
-    });
-}
-
-connection.onclose(async () => {
-    await start();
+connection.start().then(function () {
+    $("#send").disabled = false;
+}).catch(function (err) {
+    return console.error(err.toString());
 });
-
-// Start the connection.
-start();
 
 $("#send").on("click", function (event) {
     let user = $("#name").text();

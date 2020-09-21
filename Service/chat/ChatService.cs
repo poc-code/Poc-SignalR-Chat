@@ -46,7 +46,7 @@ namespace server.Service.chat
             await _client.Clients.User(user).SendAsync("ReceiveMessage", message);
         }
 
-        public async Task SendMessage(string user, string message, string group = "anonymous")
+        public async Task SendMessage(string user, string message)
         {
             await _client.Clients.All.SendAsync("ReceiveMessage", user, message);
         }

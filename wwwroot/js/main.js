@@ -85,7 +85,7 @@ class MessageBlock {
 
 function myLoginFunction() {
     var txt;
-    if (sessionStorage.getItem("UserLogged") == "") {
+    if (sessionStorage.getItem("UserLogged") === null) {
         var person = prompt("Please enter your name:", "Your Name");
         if (person == null || person == "") {
             txt = "John Doe.";
