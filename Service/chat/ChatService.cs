@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using server.Interfaces;
 using System;
 using System.Threading.Tasks;
 
 namespace server.Service.chat
 {
-    public class ChatServiceHub : Hub
+    public class ChatServiceHub : Hub, IChatServiceHub
     {
         private readonly IHubContext<ChatServiceHub> _client;
         private string _context;
@@ -56,9 +57,9 @@ namespace server.Service.chat
             await Clients.Caller.SendAsync("ReceiveMessage", message);
         }
 
-        public async  Task SendMessageToGroup(string message)
+        public async  Task SendMessageToGroup(string message, string group)
         {
-            await _client.Clients.Group("SignalR Users").SendAsync("ReceiveMessage", message);
+            await _client.Clients.Group(group).SendAsync("ReceiveMessage", message);
         }
     }
 }

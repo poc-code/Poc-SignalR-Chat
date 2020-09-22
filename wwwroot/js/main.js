@@ -100,7 +100,7 @@ function myLoginFunction() {
     console.log(sessionStorage.getItem("UserLogged"));
 }
 
-var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:3420/chat").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("./chat").build();
 $("#send").disabled = true;
 
 connection.on("ReceiveMessage", function (user, message) {

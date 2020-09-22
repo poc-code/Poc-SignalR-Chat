@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using server.Interfaces;
 using server.Service.chat;
 using server.ViewModel;
-using System.Text.Json;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace server.Controllers
@@ -13,10 +14,15 @@ namespace server.Controllers
     [ApiController]
     public class MessageController : ControllerBase
     {
-        private readonly ChatServiceHub _serviceHub;
+        private readonly IChatServiceHub _serviceHub;
+        private readonly IHubContext<ChatServiceHub> _context;
 
-        public MessageController(ChatServiceHub serviceHub) =>
+
+        public MessageController(IChatServiceHub serviceHub,IHubContext<ChatServiceHub> context)
+        {
             _serviceHub = serviceHub;
+            _context = context;
+        }
 
         [HttpPost("private")]
         public async Task<ActionResult<UserMessageViewModel>> PostPrivate([FromBody] UserMessageViewModel model)
@@ -31,11 +37,13 @@ namespace server.Controllers
         [HttpPost]
         public async Task<ActionResult<UserMessageViewModel>> Post([FromBody] UserMessageViewModel model)
         {
-            if (model.UserOrigin == null || model.UserTarget == null || model.Message == null)
+            if (model.UserOrigin == null || model.Message == null)
                 return BadRequest();
-            await _serviceHub.SendPrivateMessage(model.UserTarget.Username, model.Message);
+            await _context.Clients.All.SendAsync("ReceiveMessage", model.UserOrigin.Username, model.Message);
 
             return Ok("message send");
         }
+
+
     }
 }

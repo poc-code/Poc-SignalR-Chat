@@ -9,12 +9,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using server.Hubs;
+using server.Interfaces;
 using server.Models;
 using server.Service.chat;
 using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace server
@@ -116,6 +114,7 @@ namespace server
             #endregion
 
             services.AddSignalR();
+            RegisterServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -156,6 +155,11 @@ namespace server
                 });
             }
             #endregion
+        }
+
+        private void RegisterServices(IServiceCollection services)
+        {
+            services.AddScoped<IChatServiceHub, ChatServiceHub>();
         }
     }
 }

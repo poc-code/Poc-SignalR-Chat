@@ -19,6 +19,7 @@ namespace server.Controllers
             return Ok(new {
                 Server = "Is Ready",
                 Chat = $"http://{url}/chat1.html",
+                ChatService = $"http://{url}/chatservice.html",
                 Streaming = $"http://{url}/streaming.html"
             });
         }

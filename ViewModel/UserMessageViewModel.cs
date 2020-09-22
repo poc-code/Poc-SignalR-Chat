@@ -8,7 +8,6 @@ namespace server.ViewModel
     {
         [Required]
         public User UserOrigin { get; set; }
-        [Required]
         public User UserTarget { get; set; }
         [Required]
         public string Message { get; set; }

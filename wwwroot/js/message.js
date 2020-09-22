@@ -95,20 +95,16 @@ function parseJwt(token) {
     }
 };
 
-
 function myLoginFunction() {
     var person;
     var group;
-    debugger;
     if (sessionStorage.getItem('credentials') === null) {
         person = prompt("Please enter your name:", "Your Name");
         var password = prompt("Please enter your password:", "Passaword")
         if (person === null || person === "" || password === "" || password === null) {
-            alert("login inv·lido");
+            alert("login inv√°lido");
             setTimeout(3000);
-            debugger;
         } else {
-            debugger;
             var settings = {
                 "url": "api/v1/auth",
                 "method": "POST",
@@ -121,30 +117,28 @@ function myLoginFunction() {
 
             $.ajax(settings).done(function (response) {
                 sessionStorage.setItem("credentials", response['token']);
+                sessionStorage.setItem("userlogged", person);
+
+                var payload = parseJwt(sessionStorage.getItem('credentials'));
+                group = payload['group'];
+
+                document.getElementById("name").innerHTML = person;
+                document.getElementById("group").innerHTML = group;
             });
-            debugger;
         }
-        debugger;
     }
 
-    var payload = parseJwt(sessionStorage.getItem('credentials'));
-    person = payload['unique_name'];
-    group = payload['group'];
-
-    debugger;
-    document.getElementById("name").innerHTML = person;
-    document.getElementById("group").innerHTML = group;
 }
 
 var connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:3420/chatservicehub")
+    .withUrl("./chatservicehub")
     .build();
 $("#send").disabled = true;
 
 connection.on("ReceiveMessage", function (user, message) {
     var msg = message.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
     let messageblock = new MessageBlock(new UserMessage(user, msg));
-    if(sessionStorage.getItem("UserLogged") != user)
+    if(sessionStorage.getItem("userlogged") != user)
         $(".msg_container_base").append(messageblock.blockreceive);
     else
         $(".msg_container_base").append(messageblock.blocksent);
